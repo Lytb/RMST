@@ -29,9 +29,8 @@ Models_st_func <- f_fittedmodels(distributions,data_surv, "Obs")
 #Function.Extract Data for Plot#################################################
 
 f_pred <- function(distr, models_fitted){
-
-          prediction <- function(models_fitted)summary(models_fitted,t=seq(0, 5000, by=1))[[1]][,"est"]               pred <- lapply(models_fitted,prediction)
-          
+          prediction <- function(models_fitted){summary(models_fitted,t=seq(0, 5000, by=1))[[1]][,"est"] }                 
+          pred <- lapply(models_fitted,prediction)
           return(pred)
     }
     
@@ -58,11 +57,12 @@ f_pred_uci <- function(distr, models_fitted){
 pred_func_uci <- f_pred_uci(distributions,Models_st_func)
 
 #Function.Plot##################################################################
-f_plot <- function(distr,data_colon, treatment, title,pred,pred_lci,pred_uci){
+
+f_plot <- function(distr,data_colon, treatment, title,pred){
 
           labels <- c("KM curve",paste(distr))
           r_col <- rainbow(length(distr))
-          p1 <- plot(survfit(Surv(time,status)~1, data = data_colon[data_colon$rx==treatment,]), lty = c(1), xlab = "Time in Days", ylab = "Overall Survival", main= title, xlim=c(0.01, 5000), conf.int = T)
+          p1 <- plot(survfit(Surv(time,status)~1, data = data_colon[data_colon$rx==treatment,]), lty = c(1), xlab = "Time in Days", ylab = "Overall Survival", main= title, xlim=c(0.01, 5000), conf.int = F)
                     for (i in 1:c(length(distr))){
                     lines(x=seq(0, 5000, by=1),y=pred[[i]], col = r_col[i], lty = c(1))
                     }
@@ -72,7 +72,7 @@ f_plot <- function(distr,data_colon, treatment, title,pred,pred_lci,pred_uci){
 
       }
 
-plot_func <- f_plot(distributions, data_surv, "Obs","Overall Survival for Observation Arm",pred_func, pred_func_lci,pred_func_uci)
+plot_func <- f_plot(distributions, data_surv, "Obs","Overall Survival for Observation Arm",pred_func)
 
 #Plot with CIs
 f_plot_withCI <- function(distr,data_colon, treatment, title,pred,pred_lci,pred_uci){
@@ -127,6 +127,7 @@ SurvRM2_rmst <- c(round(obj[[4]]$rmst[1],4),round(obj[[4]]$rmst[3],4),round(obj[
 km_colon <- summary(survfit(Surv(time,status) ~ 1, data= data_surv[data_surv$rx== 0,]))
 risca_rmst <- round(RISCA::rmst(km_colon$time,km_colon$surv,max.time = 2190),4)
 
+#summary(survfit(Surv(time,status) ~ 1, data= data_surv[data_surv$rx== 0,]),type = "rmst", t=c(2190))
   
 
 ################################ADDITIONAL INFO#################################

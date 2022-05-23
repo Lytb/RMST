@@ -31,6 +31,7 @@ Models_st_func <- f_fittedmodels(distributions,data_surv, "Obs")
 f_pred <- function(distr, models_fitted){
           prediction <- function(models_fitted){summary(models_fitted,t=seq(0, 5000, by=1))[[1]][,"est"] }                 
           pred <- lapply(models_fitted,prediction)
+          
           return(pred)
     }
     
@@ -117,7 +118,6 @@ formattable(rmst_all_func)
 levels(data_surv$rx) <- c("0","1","3")
 data_surv$rx <- as.numeric(as.character(data_surv$rx))
 
-set.seed(1)
 obj <- rmst2(time=data_surv$time,status = data_surv$status, arm=data_surv$rx,tau=2190)
 SurvRM2_rmst <- c(round(obj[[4]]$rmst[1],4),round(obj[[4]]$rmst[3],4),round(obj[[4]]$rmst[4],4))
 
